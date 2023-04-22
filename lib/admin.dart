@@ -1,4 +1,7 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:app/appoint_patient.dart';
+import 'package:app/run_queue.dart';
 import 'package:app/walkin_patient.dart';
 import 'package:flutter/material.dart';
 
@@ -17,9 +20,9 @@ class _AdminPageState extends State<AdminPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Administrator Page"),
-        backgroundColor: Color.fromARGB(255, 24, 183, 141),
+        backgroundColor: const Color.fromARGB(255, 24, 183, 141),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pushReplacement(context, MaterialPageRoute(
               builder: (context) {
@@ -37,15 +40,15 @@ class _AdminPageState extends State<AdminPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(
-                    height: 105,
+                    height: 60,
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(25, 0, 0, 20),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Register patients",
+                      children: const [
+                        Text(
+                          "Add patient's queue",
                           style: TextStyle(fontSize: 18),
                         ),
                       ],
@@ -95,6 +98,32 @@ class _AdminPageState extends State<AdminPage> {
                         child: const Center(
                             child: Text(
                           "Walk-in Patient",
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        )),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 55,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pushReplacement(context, MaterialPageRoute(
+                          builder: (context) {
+                            return RunQueue();
+                          },
+                        ));
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 24, 183, 141),
+                            borderRadius: BorderRadius.circular(12)),
+                        child: const Center(
+                            child: Text(
+                          "Run Queue here",
                           style: TextStyle(color: Colors.white, fontSize: 18),
                         )),
                       ),

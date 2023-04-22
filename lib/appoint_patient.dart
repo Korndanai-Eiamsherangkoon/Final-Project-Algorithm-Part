@@ -1,10 +1,7 @@
-import 'dart:convert';
+// ignore_for_file: prefer_const_constructors
+
 import 'package:app/admin.dart';
-import 'package:app/home.dart';
-import 'package:app/home_page.dart';
-import 'package:app/info_walkin.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:intl/intl.dart';
 
@@ -29,9 +26,11 @@ class _AppointedState extends State<Appointed> {
   final idController = TextEditingController();
   final drroomController = TextEditingController();
   final dateController = TextEditingController();
+  final starttimeController = TextEditingController();
+  final endtimeController = TextEditingController();
+  DateTime? selectedDate; // initialize as null
 
   void _saveData() async {
-    print(" kuy kuy");
     final url = Uri.parse('http://10.0.2.2:5000/api');
     final response = await http.post(url, body: {
       'name': nameController.text,
@@ -39,6 +38,8 @@ class _AppointedState extends State<Appointed> {
       'id': idController.text,
       'drroom': drroomController.text,
       'date': dateController.text,
+      'starttime': starttimeController.text,
+      'endtime': endtimeController.text,
     });
     if (response.statusCode == 200) {
       // The request was successful, do something here if needed
@@ -60,6 +61,8 @@ class _AppointedState extends State<Appointed> {
     idController.dispose();
     drroomController.dispose();
     dateController.dispose();
+    starttimeController.dispose();
+    endtimeController.dispose();
     super.dispose();
   }
 
@@ -67,7 +70,7 @@ class _AppointedState extends State<Appointed> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Form for appointment patient"),
+        title: const Text("Add queue for appointment patient"),
         backgroundColor: Color.fromARGB(255, 24, 183, 141),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
@@ -88,39 +91,39 @@ class _AppointedState extends State<Appointed> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Text(
+                //   "name",
+                //   style: TextStyle(fontSize: 20),
+                // ),
+                // TextFormField(
+                //   controller: nameController,
+                //   validator: RequiredValidator(
+                //       errorText: "Please enter patient's name"),
+                //   // onSaved: (String? fname) {
+                //   //   myWalkInPatient.fname = fname!;
+                //   // },
+                // ),
+                // SizedBox(
+                //   height: 15,
+                // ),
+                // Text(
+                //   "age",
+                //   style: const TextStyle(fontSize: 20),
+                // ),
+                // TextFormField(
+                //   controller: ageController,
+                //   validator: RequiredValidator(
+                //       errorText: "Please enter patient's age"),
+                //   // onSaved: (String? age) {
+                //   //   myWalkInPatient.age = age!;
+                //   // },
+                //   keyboardType: TextInputType.number,
+                // ),
+                // SizedBox(
+                //   height: 15,
+                // ),
                 Text(
-                  "name",
-                  style: TextStyle(fontSize: 20),
-                ),
-                TextFormField(
-                  controller: nameController,
-                  validator: RequiredValidator(
-                      errorText: "Please enter patient's name"),
-                  // onSaved: (String? fname) {
-                  //   myWalkInPatient.fname = fname!;
-                  // },
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                Text(
-                  "age",
-                  style: const TextStyle(fontSize: 20),
-                ),
-                TextFormField(
-                  controller: ageController,
-                  validator: RequiredValidator(
-                      errorText: "Please enter patient's age"),
-                  // onSaved: (String? age) {
-                  //   myWalkInPatient.age = age!;
-                  // },
-                  keyboardType: TextInputType.number,
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                Text(
-                  "id",
+                  "ID",
                   style: TextStyle(fontSize: 20),
                 ),
                 TextFormField(
@@ -136,7 +139,7 @@ class _AppointedState extends State<Appointed> {
                   height: 15,
                 ),
                 Text(
-                  "doctor's room",
+                  "Doctor's Room",
                   style: TextStyle(fontSize: 20),
                 ),
                 TextFormField(
@@ -149,44 +152,112 @@ class _AppointedState extends State<Appointed> {
                   keyboardType: TextInputType.number,
                 ),
                 SizedBox(
-                  height: 15,
+                  height: 5,
                 ),
                 SizedBox(height: 16.0),
                 ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        Color.fromARGB(255, 24, 183, 141)),
+                  ),
                   onPressed: () async {
-                    final DateTime? selectedDate = await showDatePicker(
+                    final DateTime? newSelectedDate = await showDatePicker(
                       context: context,
-                      initialDate: DateTime.now(),
+                      initialDate: selectedDate ?? DateTime.now(),
                       firstDate: DateTime(2021, 1, 1),
                       lastDate: DateTime(2030, 12, 31),
                       helpText: 'SELECT A DATE',
                       cancelText: 'CANCEL',
                       confirmText: 'SELECT',
                     );
-                    if (selectedDate != null) {
-                      final DateFormat formatter = DateFormat('yyyy-MM-dd');
-                      dateController.text = formatter.format(selectedDate);
+                    if (newSelectedDate != null) {
+                      setState(() {
+                        selectedDate = newSelectedDate;
+                        final DateFormat formatter = DateFormat('yyyy-MM-dd');
+                        dateController.text = formatter.format(selectedDate!);
+                      });
                     }
                   },
                   child: Text('Select Date'),
                 ),
-                TextField(
+                TextFormField(
                   controller: dateController,
                   readOnly: true,
                   decoration: InputDecoration(
                     labelText: 'Appointment Date',
                     hintText: 'Please select Date',
                   ),
+                  validator:
+                      RequiredValidator(errorText: "Please select the date"),
                 ),
                 SizedBox(
                   height: 15,
                 ),
-
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        Color.fromARGB(255, 24, 183, 141)),
+                  ),
+                  onPressed: () async {
+                    final TimeOfDay? selectedTime = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.now(),
+                    );
+                    if (selectedTime != null) {
+                      String formattedTime =
+                          '${selectedTime.hour}:${selectedTime.minute.toString().padLeft(2, '0')}';
+                      starttimeController.text = formattedTime;
+                    }
+                  },
+                  child: Text('Select Start Time'),
+                ),
+                TextFormField(
+                  controller: starttimeController,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    labelText: 'Appointment Starting Time',
+                  ),
+                  validator: RequiredValidator(
+                      errorText: "Please select the start time"),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        Color.fromARGB(255, 24, 183, 141)),
+                  ),
+                  onPressed: () async {
+                    final TimeOfDay? selectedTime = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.now(),
+                    );
+                    if (selectedTime != null) {
+                      String formattedTime =
+                          '${selectedTime.hour}:${selectedTime.minute.toString().padLeft(2, '0')}';
+                      endtimeController.text = formattedTime;
+                    }
+                  },
+                  child: Text('Select End Time'),
+                ),
+                TextFormField(
+                  controller: endtimeController,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    labelText: 'Appointment Ending Time',
+                  ),
+                  validator: RequiredValidator(
+                      errorText: "Please select the end time"),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     child: Text(
-                      "Save data",
+                      "Add Queue",
                       style: TextStyle(fontSize: 20),
                     ),
                     style: ButtonStyle(
@@ -196,8 +267,19 @@ class _AppointedState extends State<Appointed> {
                     onPressed: () async {
                       if (formkey.currentState!.validate()) {
                         formkey.currentState!.save();
-                        final url = Uri.parse(
-                            'http://10.0.2.2:5000/api?name=${nameController.text}&age=${ageController.text}&id=${idController.text}');
+                        final DateFormat formatter = DateFormat('yyyy-MM-dd');
+                        dateController.text = formatter.format(selectedDate!);
+                        DateTime selectedDateTime = selectedDate as DateTime;
+                        final String startTimeString =
+                            dateController.text.toString() +
+                                ' ' +
+                                starttimeController.text;
+                        final String endTimeString =
+                            dateController.text.toString() +
+                                ' ' +
+                                endtimeController.text;
+                        final Uri url = Uri.parse(
+                            'http://10.0.2.2:5000/get_datetime_from_url/$startTimeString/$endTimeString/${idController.text}/${drroomController.text}');
                         final response = await http.get(url);
                         if (response.statusCode == 200) {
                           // The request was successful, do something here if needed
@@ -209,24 +291,15 @@ class _AppointedState extends State<Appointed> {
                           // Some other error occurred, handle it here
                           print('Error: ${response.statusCode}');
                         }
+                        print(
+                            'The appointment is from ${startTimeString} until ${endTimeString}');
                         formkey.currentState!.reset();
+                        //dateController.clear();
+                        // timeController.clear();
                       }
                     },
                   ),
                 ),
-                // TextButton(
-                //     onPressed: () async {
-                //       data = await fetchdata(url);
-                //       var decoded = jsonDecode(data);
-                //       _saveData;
-                //       setState(() {
-                //         output = decoded['output'];
-                //       });
-                //     },
-                //     child: Text(
-                //       'Fetch ASCII Value',
-                //       style: TextStyle(fontSize: 20),
-                //     ))
               ],
             ),
           ),

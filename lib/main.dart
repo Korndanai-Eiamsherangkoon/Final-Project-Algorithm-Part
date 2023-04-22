@@ -1,9 +1,9 @@
-import 'package:app/home.dart';
 import 'package:flutter/material.dart';
 
 import 'home_page.dart';
 
-void main() => runApp(new MyApp());
+// ignore: prefer_const_constructors
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

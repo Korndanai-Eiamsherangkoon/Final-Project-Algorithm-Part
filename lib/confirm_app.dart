@@ -6,16 +6,17 @@ import 'package:app/info_walkin.dart';
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:http/http.dart' as http;
-// import 'function.dart';
 
-class WalkIn extends StatefulWidget {
-  const WalkIn({super.key});
+// import 'function.dart';
+//confirm นัดของวันนี้เท่านั้น
+class ConfirmApp extends StatefulWidget {
+  const ConfirmApp({super.key});
 
   @override
-  State<WalkIn> createState() => _WalkInState();
+  State<ConfirmApp> createState() => _ConfirmAppState();
 }
 
-class _WalkInState extends State<WalkIn> {
+class _ConfirmAppState extends State<ConfirmApp> {
   final formkey = GlobalKey<FormState>();
   // WalkInPatient myWalkInPatient = WalkInPatient(id: '', fname: '', age: '');
   // String url = '';
@@ -27,6 +28,7 @@ class _WalkInState extends State<WalkIn> {
   final drroomController = TextEditingController();
 
   void _saveData() async {
+    print(" kuy kuy");
     final url = Uri.parse('http://10.0.2.2:5000/api');
     final response = await http.post(url, body: {
       'name': nameController.text,
@@ -60,14 +62,14 @@ class _WalkInState extends State<WalkIn> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add queue for Walk-in patient"),
+        title: const Text("Confirm you Appointment here"),
         backgroundColor: Color.fromARGB(255, 24, 183, 141),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pushReplacement(context, MaterialPageRoute(
               builder: (context) {
-                return AdminPage();
+                return HomeScreen();
               },
             ));
           },
@@ -113,7 +115,7 @@ class _WalkInState extends State<WalkIn> {
                   height: 15,
                 ),
                 Text(
-                  "ID",
+                  "Your Patient ID",
                   style: const TextStyle(fontSize: 20),
                 ),
                 TextFormField(
@@ -150,8 +152,8 @@ class _WalkInState extends State<WalkIn> {
                   width: double.infinity,
                   child: ElevatedButton(
                     child: Text(
-                      "Add Queue",
-                      style: TextStyle(fontSize: 20),
+                      "Confirm your Apointment",
+                      style: TextStyle(fontSize: 18),
                     ),
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
@@ -161,7 +163,7 @@ class _WalkInState extends State<WalkIn> {
                       if (formkey.currentState!.validate()) {
                         formkey.currentState!.save();
                         final url = Uri.parse(
-                            'http://10.0.2.2:5000/walkin/${idController.text}/${drroomController.text}');
+                            'http://10.0.2.2:5000/linkto_confirm_appointment/${idController.text}/${drroomController.text}');
                         // 'http://10.0.2.2:5000/addqueue?name=${nameController.text}&age=${ageController.text}&id=${idController.text}&drroom=${drroomController.text}');
 
                         final response = await http.get(url);
