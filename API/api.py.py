@@ -364,33 +364,52 @@ def status_offline(doctor):
 
 def status_display(doctor):
   return
-
+@app.route('/start_button/<string:doctor>', methods=['GET'])
 def start_button(doctor):
-  start_recorder(doctor)
+  now = datetime.datetime.now()
+  year, month, day = now.year, now.month, now.day
+  patient_id = (db.child("Doctor_Push_Start").child(f"{year}/{month}/{day}").child(doctor).get()).val()
+  start_recorder(doctor,patient_id)
   status_busy(doctor)
-  return
+  db.child("Doctor_Push_Start").child(f"{year}/{month}/{day}").child(doctor).remove()
+  return jsonify("Time recording has started")
+@app.route('/finish_button/<string:doctor>', methods=['GET'])
 def finish_button(doctor):
   stop_recorder(doctor)
-  status_waiting()
-  return
-def ready_button():
-  status_ready()
-  return
-def absent_button():
-  status_waiting()
-  return
-def break_button():
-  status_break()
-  return
-def back_button():
-  status_waiting()
-  return
-def get_start_button():
-  status_waiting()
-  return
-def back_icon_button():
-  status_arrived()
-  return
+  status_waiting(doctor)
+  return jsonify("Time recording has stopped")
+@app.route('/ready_button/<string:doctor>', methods=['GET'])
+def ready_button(doctor):
+  status_ready(doctor)
+  return jsonify("Status: Ready")
+@app.route('/absent_button/<string:doctor>', methods=['GET'])
+def absent_button(doctor):
+  status_waiting(doctor)
+  return jsonify("Status: Waiting. Patient Absent")
+@app.route('/break_button/<string:doctor>', methods=['GET'])
+def break_button(doctor):
+  status_break(doctor)
+  return jsonify("Status: Break")
+@app.route('/back_button/<string:doctor>', methods=['GET'])
+def back_button(doctor):
+  status_waiting(doctor)
+  return jsonify("Status: Waiting")
+@app.route('/get_start_button/<string:doctor>', methods=['GET'])
+def get_start_button(doctor):
+  status_waiting(doctor)
+  return jsonify("Status: Waiting")
+@app.route('/back_icon_button/<string:doctor>', methods=['GET'])
+def back_icon_button(doctor):
+  status_arrived(doctor)
+  return jsonify("Status: Arrived")
+@app.route('/enter_button/<string:doctor>', methods=['GET'])
+def enter_button(doctor):
+  status_arrived(doctor)
+  return jsonify("Status: Arrived")
+@app.route('/exit_button/<string:doctor>', methods=['GET'])
+def exit_button(doctor):
+  status_offline(doctor)
+  return jsonify("Status: Offline")
 
 
 """**Queuing  System**
